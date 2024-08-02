@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity Volume</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .volume-panel {
+            background-color: #ffffff;
+            border-radius: 50%;
+            width: 300px;
+            height: 300px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .volume-slider {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: center;
+        }
+
+        .slider-track {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 10px;
+            height: calc(100% - 20px);
+            background: linear-gradient(to bottom, #ff0000, #fff200);
+            transform: translateX(-50%);
+        }
+
+        .slider-ball {
+            position: absolute;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background-color: #2c3e50;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+
+        .volume-percentage {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .toggle-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="volume-panel">
+        <div class="volume-slider" id="volumeSlider">
+            <div class="slider-track"></div>
+            <div class="slider-ball" id="sliderBall"></div>
+        </div>
+        <div class="volume-percentage" id="volumePercentage">50%</div>
+    </div>
+
+    <button class="toggle-button" id="toggleButton">▶️</button>
+
+    <audio id="backgroundSound" loop>
+        <source src="https://www.myinstants.com/media/sounds/spiderman-meme-song.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const volumeSlider = document.getElementById('volumeSlider');
+        const sliderBall = document.getElementById('sliderBall');
+        const volumePercentage = document.getElementById('volumePercentage');
+        const backgroundSound = document.getElementById('backgroundSound');
+        const toggleButton = document.getElementById('toggleButton');
+
+        let rotation = 0;
+        let volume = 50;
+        let isDragging = false;
+        let lastVolume = volume;
+        let isPlaying = false;
+
+        function updateVolume() {
+            volumePercentage.textContent = Math.round(volume) + '%';
+            backgroundSound.volume = volume / 100;
+        }
+
+        function animateSlider() {
+            rotation = (rotation + 0.5) % 360;
+            volumeSlider.style.transform = `rotate(${rotation}deg)`;
+
+            if (!isDragging) {
+                // Calculate the "gravity" effect
+                let gravityEffect = Math.sin((rotation - 90) * Math.PI / 180);
+
+                // Update volume based on gravity
+                volume += gravityEffect;
+                volume = Math.max(0, Math.min(100, volume));
+
+                // Update ball position (adjusted to full range)
+                sliderBall.style.top = `${10 + (280 * (100 - volume) / 100)}px`;
+
+                updateVolume();
+            }
+            requestAnimationFrame(animateSlider);
+        }
+
+        function onDrag(event) {
+            if (isDragging) {
+                const rect = volumeSlider.getBoundingClientRect();
+                const mouseY = event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
+                let newVolume = 100 - ((mouseY - rect.top) / rect.height) * 100;
+                newVolume = Math.max(0, Math.min(100, newVolume));
+                volume = newVolume;
+                lastVolume = volume;
+                sliderBall.style.top = `${10 + (280 * (100 - volume) / 100)}px`;
+                updateVolume();
+            }
+        }
+
+        sliderBall.addEventListener('mousedown', () => { isDragging = true; });
+        sliderBall.addEventListener('touchstart', () => { isDragging = true; });
+
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('touchmove', onDrag);
+
+        document.addEventListener('mouseup', () => { isDragging = false; });
+        document.addEventListener('touchend', () => { isDragging = false; });
+
+        toggleButton.addEventListener('click', () => {
+            if (isPlaying) {
+                backgroundSound.pause();
+                toggleButton.textContent = '▶️';
+            } else {
+                backgroundSound.play().catch(e => console.log("Audio play failed:", e));
+                toggleButton.textContent = '⏸️';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        updateVolume();
+        animateSlider();
+    </script>
+</body>
+
+</html>

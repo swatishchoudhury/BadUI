@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad UIs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #2d3436;
+            --background-color: #f9f9f9;
+            --text-color: #2d3436;
+            --card-background: #ffffff;
+        }
+
+        body {
+            font-family: 'Product Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            margin: 0 50px 0 50px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-align: center;
+            padding: .5rem 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .search-filter {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #search {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+        }
+
+        .tag-filter {
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            opacity: 50%;
+            transition: transform, opacity 0.3s ease-out;
+            user-select: none;
+            font-size: small;
+        }
+
+        .tag.active {
+            opacity: 100;
+            transform: scale(1.02);
+        }
+
+        #clearTags {
+            display: none;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: small;
+            border: none;
+        }
+
+        #clearTags:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .ui-item {
+            background-color: var(--card-background);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ui-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+        }
+
+        .ui-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .ui-item-content {
+            padding: 20px;
+        }
+
+        .ui-item h3 {
+            margin: 0 0 10px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .ui-item p {
+            margin: 0 0 15px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .ui-item a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ui-item a:hover {
+            background-color: #5541c7;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-content a {
+            color: #ffffff;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .footer-content a:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Bad UIs</h1>
+            <p class="subtitle">Intentionally bad. Unintentionally rad.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="search-filter">
+            <input type="text" id="search" placeholder="Search UIs...">
+        </div>
+        <div class="tag-filter">
+            <span class="tag" data-tag="form">🏷️form</span>
+            <span class="tag" data-tag="unsubscribe">🏷️unsubscribe</span>
+            <span class="tag" data-tag="volume">🏷️volume</span>
+            <span class="tag" data-tag="button">🏷️button</span>
+            <button id="clearTags">Clear Filters</button>
+        </div>
+        <div class="gallery">
+            <div class="ui-item" data-tags="form">
+                <img src="images/form.png" alt="form thumbnail">
+                <div class="ui-item-content">
+                    <h3>Simple Registration Form</h3>
+                    <p>A form that tests your patience with unexpected interactions.</p>
+                    <a href="form/">Explore UI</a>
+                </div>
+            </div>
+            <div class="ui-item" data-tags="unsubscribe button">
+                <img src="images/unsubscribe-button.png" alt="unsubscribe thumbnail">
+                <div class="ui-item-content">
+                    <h3>Easy Unsubscribe Button</h3>
+                    <p>A very user-friendly and easy unsubscribe button.</p>
+                    <a href="unsubscribe-button/">Explore UI</a>
+                </div>
+            </div>
+            <div class="ui-item" data-tags="volume">
+                <img src="images/gravity-volume.png" alt="gravity volume thumbnail">
+                <div class="ui-item-content">
+                    <h3>Gravity Volume Slider</h3>
+                    <p>Control volume with gravity</p><br>
+                    <a href="gravity-volume/">Explore UI</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <a href="https://github.com/swatishchoudhury" target="_blank">GitHub</a>
+                <a href="https://www.reddit.com/r/badUIbattles/" target="_blank">Inspiration -
+                    r/badUIbattles</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('search');
+            const tags = document.querySelectorAll('.tag');
+            const uiItems = document.querySelectorAll('.ui-item');
+            const clearTagsButton = document.getElementById('clearTags');
+
+            function filterItems() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeTags = Array.from(document.querySelectorAll('.tag.active')).map(tag => tag.dataset.tag);
+
+                uiItems.forEach(item => {
+                    const title = item.querySelector('h3').textContent.toLowerCase();
+                    const description = item.querySelector('p').textContent.toLowerCase();
+                    const itemTags = item.dataset.tags.split(' ');
+
+                    const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesTags = activeTags.length === 0 || activeTags.some(tag => itemTags.includes(tag));
+
+                    item.style.display = matchesSearch && matchesTags ? 'block' : 'none';
+                });
+
+                clearTagsButton.style.display = activeTags.length > 0 ? 'inline-block' : 'none';
+            }
+
+            searchInput.addEventListener('input', filterItems);
+
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.classList.toggle('active');
+                    filterItems();
+                });
+            });
+
+            clearTagsButton.addEventListener('click', () => {
+                tags.forEach(tag => tag.classList.remove('active'));
+                filterItems();
+            });
+
+            filterItems();
+        });
+    </script>
+</body>
+
+</html>

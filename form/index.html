@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Registration Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Product Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            transition: background-color 0.5s;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            text-align: center;
+            color: #3498db;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+            transform: scale(1.02);
+        }
+
+        button {
+            width: 48%;
+            padding: 0.8rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        #password-feedback {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 0.5rem;
+        }
+
+        #captcha-container {
+            margin-top: 1rem;
+        }
+
+        .reset-button {
+            background-color: #e74c3c;
+        }
+
+        #registration-result {
+            margin-top: 1rem;
+        }
+
+        #time-counter {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .letter-bubble {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(52, 152, 219, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        #email {
+            transition: transform 0.1s;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #math-captcha-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #math-captcha-question {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        #math-captcha-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container" id="form-container">
+        <h2>Simple Registration Form</h2>
+        <form id="challenging-form">
+            <div class="form-group">
+                <label for="username" class="required">Username</label>
+                <input type="text" id="username" name="username" required readonly>
+                <div class="button-group">
+                    <button type="button" id="save-username">Save Username</button>
+                    <button type="button" id="clear-username">Clear Username</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" class="required">Password</label>
+                <input type="text" id="password" name="password" autocomplete="off">
+                <div id="password-feedback"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password" class="required">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="email" class="required">Email</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="country" class="required">Country</label>
+                <select id="country" name="country">
+                    <option value="" disabled selected>Choose</option>
+                </select>
+            </div>
+
+            <div id="slider-captcha-container"></div>
+            <div id="math-captcha-container"></div>
+            <div class="button-group">
+                <button type="submit" id="submit-btn">Register</button>
+                <button type="button" class="reset-button" id="reset-btn">Reset</button>
+            </div>
+        </form>
+        <div id="registration-result" style="display: none;"></div>
+    </div>
+    <div id="time-counter"></div>
+    <script>
+        const form = document.getElementById('challenging-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const passwordFeedback = document.getElementById('password-feedback');
+        const formContainer = document.getElementById('form-container');
+        const usernameInput = document.getElementById('username');
+        const saveUsernameBtn = document.getElementById('save-username');
+        const clearUsernameBtn = document.getElementById('clear-username');
+        const countrySelect = document.getElementById('country');
+        const registrationResult = document.getElementById('registration-result');
+        const timeCounter = document.getElementById('time-counter');
+        const sliderCaptchaContainer = document.getElementById('slider-captcha-container');
+
+        const passwordRequirements = [
+            { regex: /.{15,}/, message: "Password must be at least 15 characters long." },
+            { regex: /[A-Z]/, message: "Password must contain at least one uppercase letter." },
+            { regex: /[a-z]/, message: "Password must contain at least one lowercase letter." },
+            { regex: /\d/, message: "Password must contain at least one number." },
+            { regex: /[!@#$%^&*(),.?":{}|<>]/, message: "Password must contain at least one special character." },
+            { regex: /pizza|burger|taco|sushi|pasta/i, message: "Password must contain a food item (pizza, burger, taco, sushi, or pasta)." },
+            { regex: /red|orange|yellow|green|blue|indigo|violet/i, message: "Password must contain a color of the rainbow" },
+            { regex: /cat|dog|bird|fish|hamster/i, message: "Password must contain a pet (cat, dog, bird, fish, or hamster)." },
+            { regex: /\d{2}:\d{2}/, message: "Password must contain a time in 24-hour format (e.g., 14:30)." },
+            { regex: /^(?!.*(.)\1\1).*$/, message: "Password must not contain any character repeated three times in a row." },
+            { regex: /^(?!.*[aeiouAEIOU]{2}).*$/, message: "Password must not contain two consecutive vowels." },
+            { regex: /mercury|venus|earth|mars|jupiter|saturn|uranus|neptune/i, message: "Password must contain the name of a planet in our solar system." },
+        ];
+
+        let currentPasswordRequirementIndex = 0;
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            const currentRequirement = passwordRequirements[currentPasswordRequirementIndex];
+            if (!currentRequirement.regex.test(password)) {
+                passwordFeedback.textContent = currentRequirement.message;
+                return false;
+            }
+
+            passwordFeedback.textContent = '';
+            return true;
+        }
+
+        function validateConfirmPassword() {
+            return passwordInput.value === confirmPasswordInput.value;
+        }
+
+        const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        let username = '';
+
+        function generateFloatingLetters() {
+            letters.forEach(letter => {
+                const bubble = document.createElement('div');
+                bubble.textContent = letter;
+                bubble.classList.add('letter-bubble');
+                bubble.style.left = `${Math.random() * 100}vw`;
+                bubble.style.top = `${Math.random() * 100}vh`;
+                bubble.style.userSelect = 'none';
+                bubble.addEventListener('click', () => {
+                    username += letter;
+                    usernameInput.value = username;
+                });
+                document.body.appendChild(bubble);
+            });
+            animateLetters();
+        }
+
+        function animateLetters() {
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            bubbles.forEach(bubble => {
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+                let speedX = (Math.random() - 0.5) * 5;
+                let speedY = (Math.random() - 0.5) * 5;
+
+                function animate() {
+                    x += speedX;
+                    y += speedY;
+
+                    if (x < 0 || x > window.innerWidth) speedX *= -1;
+                    if (y < 0 || y > window.innerHeight) speedY *= -1;
+
+                    bubble.style.left = `${x}px`;
+                    bubble.style.top = `${y}px`;
+
+                    requestAnimationFrame(animate);
+                }
+
+                animate();
+            });
+        }
+
+        usernameInput.addEventListener('click', () => {
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            bubbles.forEach(bubble => bubble.remove());
+            saveUsernameBtn.disabled = false;
+            generateFloatingLetters();
+        });
+
+        saveUsernameBtn.addEventListener('click', () => {
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            bubbles.forEach(bubble => bubble.remove());
+            saveUsernameBtn.disabled = true;
+        });
+
+        clearUsernameBtn.addEventListener('click', () => {
+            username = '';
+            usernameInput.value = '';
+            saveUsernameBtn.disabled = false;
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            bubbles.forEach(bubble => bubble.remove());
+            generateFloatingLetters();
+        });
+
+        const countries = [
+            "🇦🇫 Afghanistan", "🇦🇱 Albania", "🇩🇿 Algeria", "🇦🇩 Andorra", "🇦🇴 Angola", "🇦🇬 Antigua and Barbuda", "🇦🇷 Argentina", "🇦🇲 Armenia", "🇦🇺 Australia", "🇦🇹 Austria",
+            "🇦🇿 Azerbaijan", "🇧🇸 Bahamas", "🇧🇭 Bahrain", "🇧🇩 Bangladesh", "🇧🇧 Barbados", "🇧🇾 Belarus", "🇧🇪 Belgium", "🇧🇿 Belize", "🇧🇯 Benin", "🇧🇹 Bhutan",
+            "🇧🇴 Bolivia", "🇧🇦 Bosnia and Herzegovina", "🇧🇼 Botswana", "🇧🇷 Brazil", "🇧🇳 Brunei", "🇧🇬 Bulgaria", "🇧🇫 Burkina Faso", "🇧🇮 Burundi", "🇨🇻 Cabo Verde", "🇰🇭 Cambodia",
+            "🇨🇲 Cameroon", "🇨🇦 Canada", "🇨🇫 Central African Republic", "🇹🇩 Chad", "🇨🇱 Chile", "🇨🇳 China", "🇨🇴 Colombia", "🇰🇲 Comoros", "🇨🇩 Congo, Democratic Republic of the", "🇨🇬 Congo, Republic of the",
+            "🇨🇷 Costa Rica", "🇭🇷 Croatia", "🇨🇺 Cuba", "🇨🇾 Cyprus", "🇨🇿 Czech Republic", "🇩🇰 Denmark", "🇩🇯 Djibouti", "🇩🇲 Dominica", "🇩🇴 Dominican Republic", "🇪🇨 Ecuador",
+            "🇪🇬 Egypt", "🇸🇻 El Salvador", "🇬🇶 Equatorial Guinea", "🇪🇷 Eritrea", "🇪🇪 Estonia", "🇸🇿 Eswatini", "🇪🇹 Ethiopia", "🇫🇯 Fiji", "🇫🇮 Finland", "🇫🇷 France",
+            "🇬🇦 Gabon", "🇬🇲 Gambia", "🇬🇪 Georgia", "🇩🇪 Germany", "🇬🇭 Ghana", "🇬🇷 Greece", "🇬🇩 Grenada", "🇬🇹 Guatemala", "🇬🇳 Guinea", "🇬🇼 Guinea-Bissau",
+            "🇬🇾 Guyana", "🇭🇹 Haiti", "🇭🇳 Honduras", "🇭🇺 Hungary", "🇮🇸 Iceland", "🇮🇳 India", "🇮🇩 Indonesia", "🇮🇷 Iran", "🇮🇶 Iraq", "🇮🇪 Ireland",
+            "🇮🇱 Israel", "🇮🇹 Italy", "🇯🇲 Jamaica", "🇯🇵 Japan", "🇯🇴 Jordan", "🇰🇿 Kazakhstan", "🇰🇪 Kenya", "🇰🇮 Kiribati", "🇰🇵 Korea, North", "🇰🇷 Korea, South",
+            "🇽🇰 Kosovo", "🇰🇼 Kuwait", "🇰🇬 Kyrgyzstan", "🇱🇦 Laos", "🇱🇻 Latvia", "🇱🇧 Lebanon", "🇱🇸 Lesotho", "🇱🇷 Liberia", "🇱🇾 Libya", "🇱🇮 Liechtenstein",
+            "🇱🇹 Lithuania", "🇱🇺 Luxembourg", "🇲🇬 Madagascar", "🇲🇼 Malawi", "🇲🇾 Malaysia", "🇲🇻 Maldives", "🇲🇱 Mali", "🇲🇹 Malta", "🇲🇭 Marshall Islands", "🇲🇷 Mauritania",
+            "🇲🇺 Mauritius", "🇲🇽 Mexico", "🇫🇲 Micronesia", "🇲🇩 Moldova", "🇲🇨 Monaco", "🇲🇳 Mongolia", "🇲🇪 Montenegro", "🇲🇦 Morocco", "🇲🇿 Mozambique", "🇲🇲 Myanmar",
+            "🇳🇦 Namibia", "🇳🇷 Nauru", "🇳🇵 Nepal", "🇳🇱 Netherlands", "🇳🇿 New Zealand", "🇳🇮 Nicaragua", "🇳🇪 Niger", "🇳🇬 Nigeria", "🇲🇰 North Macedonia", "🇳🇴 Norway",
+            "🇴🇲 Oman", "🇵🇰 Pakistan", "🇵🇼 Palau", "🇵🇸 Palestine", "🇵🇦 Panama", "🇵🇬 Papua New Guinea", "🇵🇾 Paraguay", "🇵🇪 Peru", "🇵🇭 Philippines", "🇵🇱 Poland",
+            "🇵🇹 Portugal", "🇶🇦 Qatar", "🇷🇴 Romania", "🇷🇺 Russia", "🇷🇼 Rwanda", "🇰🇳 Saint Kitts and Nevis", "🇱🇨 Saint Lucia", "🇻🇨 Saint Vincent and the Grenadines", "🇼🇸 Samoa", "🇸🇲 San Marino",
+            "🇸🇹 Sao Tome and Principe", "🇸🇦 Saudi Arabia", "🇸🇳 Senegal", "🇷🇸 Serbia", "🇸🇨 Seychelles", "🇸🇱 Sierra Leone", "🇸🇬 Singapore", "🇸🇰 Slovakia", "🇸🇮 Slovenia", "🇸🇧 Solomon Islands",
+            "🇸🇴 Somalia", "🇿🇦 South Africa", "🇸🇸 South Sudan", "🇪🇸 Spain", "🇱🇰 Sri Lanka", "🇸🇩 Sudan", "🇸🇷 Suriname", "🇸🇪 Sweden", "🇨🇭 Switzerland", "🇸🇾 Syria",
+            "🇹🇼 Taiwan", "🇹🇯 Tajikistan", "🇹🇿 Tanzania", "🇹🇭 Thailand", "🇹🇱 Timor-Leste", "🇹🇬 Togo", "🇹🇴 Tonga", "🇹🇹 Trinidad and Tobago", "🇹🇳 Tunisia", "🇹🇷 Turkey",
+            "🇹🇲 Turkmenistan", "🇹🇻 Tuvalu", "🇺🇬 Uganda", "🇺🇦 Ukraine", "🇦🇪 United Arab Emirates", "🇬🇧 United Kingdom", "🇺🇸 United States", "🇺🇾 Uruguay", "🇺🇿 Uzbekistan", "🇻🇺 Vanuatu",
+            "🇻🇦 Vatican City", "🇻🇪 Venezuela", "🇻🇳 Vietnam", "🇾🇪 Yemen", "🇿🇲 Zambia", "🇿🇼 Zimbabwe"
+        ];
+
+        countries.sort(() => Math.random() - 0.5);
+
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country;
+            option.textContent = country;
+            countrySelect.appendChild(option);
+        });
+
+
+        let startTime;
+        let timerInterval;
+
+        function resetForm() {
+            form.reset();
+            passwordFeedback.textContent = '';
+            username = '';
+            usernameInput.value = '';
+            saveUsernameBtn.disabled = false;
+            const bubbles = document.querySelectorAll('.letter-bubble');
+            bubbles.forEach(bubble => bubble.remove());
+            generateFloatingLetters();
+            startTime = new Date();
+            clearInterval(timerInterval);
+            updateTimeCounter();
+            timerInterval = setInterval(updateTimeCounter, 1000);
+            createSliderCaptcha();
+            createMathCaptcha();
+            currentPasswordRequirementIndex = 0;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                resetForm();
+            }
+        });
+
+        resetBtn.addEventListener('click', resetForm);
+
+        function updateTimeCounter() {
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            timeCounter.textContent = `Time elapsed: ${elapsedTime} seconds`;
+
+            const hue = (elapsedTime % 360).toString(10);
+            document.body.style.backgroundColor = `hsl(${hue}, 70%, 80%)`;
+        }
+
+        function createSliderCaptcha() {
+            const targetValue = Math.floor(Math.random() * 91) + 5;
+            sliderCaptchaContainer.innerHTML = `
+            <label for="slider-captcha">Prove you're human: Slide to exactly ${targetValue}%</label>
+            <input type="range" id="slider-captcha" min="0" max="100" value="0">
+            <div id="slider-captcha-feedback"></div>
+        `;
+            const slider = sliderCaptchaContainer.querySelector('#slider-captcha');
+            const feedback = sliderCaptchaContainer.querySelector('#slider-captcha-feedback');
+            slider.addEventListener('input', () => {
+                feedback.textContent = slider.value == targetValue ? "Perfect!" : "Keep trying!";
+            });
+        }
+        setInterval(createSliderCaptcha, 15000);
+        function validateSliderCaptcha() {
+            const slider = document.getElementById('slider-captcha');
+            const targetValue = parseInt(slider.previousElementSibling.textContent.match(/\d+/)[0]);
+            return slider.value == targetValue;
+        }
+        let mathCaptchaAnswer = 0;
+
+        function createMathCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operation = Math.random() < 0.5 ? '-' : '*';
+
+            const mathCaptchaContainer = document.getElementById('math-captcha-container');
+            mathCaptchaContainer.innerHTML = `
+                    <label for="math-captcha-input" id="math-captcha-question">What is ${num1} ${operation} ${num2}?</label>
+                    <input type="number" id="math-captcha-input" name="math-captcha" required>
+                `;
+
+            mathCaptchaAnswer = operation === '*' ? num1 * num2 : num1 - num2;
+        }
+
+        function validateMathCaptcha() {
+            const input = document.getElementById('math-captcha-input');
+            return parseInt(input.value) === mathCaptchaAnswer;
+        }
+
+        setInterval(createMathCaptcha, 15000);
+
+        function validateUsername(username) {
+            if (!username) {
+                return "Username cannot be empty.";
+            }
+            if (username.length < 3 || username.length > 20) {
+                return "Username must be between 3 and 20 characters long.";
+            }
+            return null; // null indicates no error
+        }
+        function validateEmail(email) {
+            if (!email) {
+                return "Email cannot be empty.";
+            }
+            // Simple regex for email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return "Please enter a valid email address.";
+            }
+            return null; // null indicates no error
+        }
+        function validateCountry(country) {
+            if (!country) {
+                return "Please select a country.";
+            }
+            return null; // null indicates no error
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (!validateSliderCaptcha()) {
+                alert("Please complete the slider captcha correctly.");
+                return;
+            }
+            if (!validateMathCaptcha()) {
+                alert("Please complete the math captcha correctly.");
+                return;
+            }
+            const usernameError = validateUsername(usernameInput.value);
+            if (usernameError) {
+                alert(usernameError);
+                return;
+            }
+
+
+            // Check all password requirements
+            for (let i = 0; i < passwordRequirements.length; i++) {
+                if (!passwordRequirements[i].regex.test(passwordInput.value)) {
+                    passwordFeedback.textContent = passwordRequirements[i].message;
+                    return;
+                }
+            }
+
+            if (!validateConfirmPassword()) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            const emailError = validateEmail(document.getElementById('email').value);
+            if (emailError) {
+                alert(emailError);
+                return;
+            }
+
+            const countryError = validateCountry(countrySelect.value);
+            if (countryError) {
+                alert(countryError);
+                return;
+            }
+            // If we've made it this far, the form is valid
+            const endTime = new Date();
+            const totalTime = Math.floor((endTime - startTime) / 1000);
+            clearInterval(timerInterval);
+            const formData = new FormData(form);
+            let result = `
+            <h3>Registration Successful!</h3>
+            <p><strong>Time taken:</strong> ${totalTime}</p>
+            <p><strong>Username:</strong> ${formData.get('username')}</p>
+            <p><strong>Password:</strong> ${formData.get('password')}</p>
+            <p><strong>Email:</strong> ${formData.get('email')}</p>
+            <p><strong>Country:</strong> ${formData.get('country')}</p>
+        `;
+            registrationResult.innerHTML = result;
+            registrationResult.style.display = 'block';
+            form.style.display = 'none';
+        });
+        // Prevent copy-paste for all input fields
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                resetForm();
+                alert("Work hard, no shortcuts! Form resets!");
+            });
+        });
+
+        // Initialize the form
+        resetForm();
+    </script>
+</body>
+
+</html>

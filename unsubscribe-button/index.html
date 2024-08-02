@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsubscribe Game - Fixed Button Position</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #unsub-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #instruction {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #unsub-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #bar {
+            width: 70px;
+            height: 400px;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #red-line {
+            position: absolute;
+            width: 100%;
+            height: 50px;
+            background-color: red;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #green-line {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background-color: green;
+            left: 0;
+        }
+
+        #unsubscribe-btn {
+            display: none;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            position: absolute;
+        }
+
+        #success-message {
+            display: none;
+            font-weight: bold;
+            color: green;
+            margin-bottom: 20px;
+        }
+
+        #try-again-btn {
+            display: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="unsub-container">
+        <div id="instruction">
+            Do you really want to stop receiving emails?
+        </div>
+        <div id="unsub-area">
+            <div id="bar">
+                <div id="red-line"></div>
+                <div id="green-line"></div>
+            </div>
+        </div>
+        <div id="success-message">Unsubscribed &#128532;</div>
+        <button id="try-again-btn">Join our newsletter, again!</button>
+    </div>
+    <button id="unsubscribe-btn">Yes, unsubscribe.</button>
+
+    <script>
+        const bar = document.getElementById('bar');
+        const redLine = document.getElementById('red-line');
+        const greenLine = document.getElementById('green-line');
+        const unsubscribeBtn = document.getElementById('unsubscribe-btn');
+        const successMessage = document.getElementById('success-message');
+        const tryAgainBtn = document.getElementById('try-again-btn');
+        const unsubArea = document.getElementById('unsub-area');
+        const instruction = document.getElementById('instruction');
+
+        let direction = 1;
+        let position = 0;
+        const speed = 2;
+        let buttonPosition = null;
+        let animationId = null;
+
+        function animateLine() {
+            position += direction * speed;
+            if (position >= bar.offsetHeight || position <= 0) {
+                direction *= -1;
+            }
+            greenLine.style.top = `${position}px`;
+
+            const redLineTop = (bar.offsetHeight - redLine.offsetHeight) / 2;
+            const redLineBottom = redLineTop + redLine.offsetHeight;
+
+            if (position >= redLineTop && position <= redLineBottom) {
+                if (!buttonPosition) {
+                    buttonPosition = getRandomPosition();
+                    showButton(buttonPosition);
+                }
+            } else {
+                unsubscribeBtn.style.display = 'none';
+                buttonPosition = null;
+            }
+
+            animationId = requestAnimationFrame(animateLine);
+        }
+
+        function getRandomPosition() {
+            const maxWidth = window.innerWidth - unsubscribeBtn.offsetWidth;
+            const maxHeight = window.innerHeight - unsubscribeBtn.offsetHeight;
+            return {
+                x: Math.floor(Math.random() * maxWidth),
+                y: Math.floor(Math.random() * maxHeight)
+            };
+        }
+
+        function showButton(position) {
+            unsubscribeBtn.style.left = `${position.x}px`;
+            unsubscribeBtn.style.top = `${position.y}px`;
+            unsubscribeBtn.style.display = 'block';
+        }
+
+        function handleUnsubscribe() {
+            unsubArea.style.display = 'none';
+            instruction.style.display = 'none';
+            unsubscribeBtn.style.display = 'none';
+            successMessage.style.display = 'block';
+            tryAgainBtn.style.display = 'block';
+            cancelAnimationFrame(animationId);
+        }
+
+        function reset() {
+            unsubArea.style.display = 'flex';
+            instruction.style.display = 'block';
+            successMessage.style.display = 'none';
+            tryAgainBtn.style.display = 'none';
+            position = 0;
+            direction = 1;
+            greenLine.style.top = '0px';
+            buttonPosition = null;
+
+            // Cancel the existing animation and start a new one
+            cancelAnimationFrame(animationId);
+            animationId = requestAnimationFrame(animateLine);
+        }
+
+        unsubscribeBtn.addEventListener('click', handleUnsubscribe);
+        tryAgainBtn.addEventListener('click', reset);
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' && unsubscribeBtn.style.display === 'block') {
+                handleUnsubscribe();
+            }
+        });
+
+        // Start the initial animation
+        animationId = requestAnimationFrame(animateLine);
+    </script>
+</body>
+
+</html>
