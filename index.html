@@ -5,209 +5,261 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bad UIs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Product+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --primary-color: #6c5ce7;
-            --secondary-color: #2d3436;
-            --background-color: #f9f9f9;
-            --text-color: #2d3436;
-            --card-background: #ffffff;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --accent: #ffffff;
+            --border: #333333;
+            --hover: #2a2a2a;
         }
 
         body {
-            font-family: 'Product Sans', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-weight: 400;
         }
 
         .container {
-            margin: 0 50px 0 50px;
-            padding: 20px;
-            flex-grow: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
         }
 
-
         header {
-            background-color: var(--primary-color);
-            color: #ffffff;
+            padding: 60px 0;
             text-align: center;
-            padding: .5rem 0;
         }
 
         h1 {
-            margin: 0;
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -1px;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            margin-top: 0.5rem;
-            opacity: 0.9;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
         }
 
-        .search-filter {
-            margin-top: 20px;
+        .controls {
+            margin: 40px 0;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
         }
 
         #search {
-            flex-grow: 1;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid var(--primary-color);
-            border-radius: 5px;
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: border-color 0.2s ease;
+        }
+
+        #search:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        #search::placeholder {
+            color: var(--text-secondary);
         }
 
         .tag-filter {
-            padding: 10px;
             display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            gap: 10px;
+            margin-top: 12px;
         }
 
         .tag {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
             cursor: pointer;
-            opacity: 50%;
-            transition: transform, opacity 0.3s ease-out;
-            user-select: none;
-            font-size: small;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag:hover {
+            background: var(--hover);
+            border-color: var(--accent);
         }
 
         .tag.active {
-            opacity: 100;
-            transform: scale(1.02);
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
         }
 
         #clearTags {
             display: none;
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
             cursor: pointer;
-            font-size: small;
-            border: none;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         #clearTags:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
+            background: var(--hover);
+            border-color: var(--accent);
         }
 
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 80px;
         }
 
         .ui-item {
-            background-color: var(--card-background);
-            border-radius: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
         .ui-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+            transform: translateY(-2px);
+            /* border-color: var(--accent); */
         }
 
         .ui-item img {
             width: 100%;
             height: 180px;
             object-fit: cover;
+            background: var(--bg-secondary);
         }
 
         .ui-item-content {
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 180px;
         }
 
         .ui-item h3 {
-            margin: 0 0 10px;
-            color: var(--primary-color);
-            font-size: 1.4rem;
-            font-weight: 700;
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
         }
 
         .ui-item p {
-            margin: 0 0 15px;
-            font-size: 1rem;
-            color: #666;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: auto;
+            line-height: 1.6;
         }
 
         .ui-item a {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: #ffffff;
+            padding: 8px 16px;
+            background: transparent;
+            color: var(--text-primary);
             text-decoration: none;
-            border-radius: 25px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            font-weight: bold;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            margin-top: 16px;
+            width: 120px;
+            text-align: center;
         }
 
         .ui-item a:hover {
-            background-color: #5541c7;
-            transform: translateY(-2px);
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
         }
 
         footer {
-            background-color: var(--secondary-color);
-            color: #ffffff;
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
             text-align: center;
-            padding: 20px 0;
-            margin-top: 40px;
         }
 
         .footer-content {
             display: flex;
             justify-content: center;
-            align-items: center;
+            gap: 32px;
             flex-wrap: wrap;
         }
 
         .footer-content a {
-            color: #ffffff;
+            color: var(--text-secondary);
             text-decoration: none;
-            margin: 0 15px;
-            transition: color 0.3s ease;
-            font-size: 1rem;
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: color 0.2s ease;
         }
 
         .footer-content a:hover {
-            color: var(--primary-color);
+            color: var(--text-primary);
         }
 
         @media (max-width: 768px) {
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            .container {
+                padding: 0 16px;
+            }
+
+            header {
+                padding: 40px 0;
             }
 
             h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
 
-            .subtitle {
-                font-size: 1.1rem;
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tag-filter {
+                justify-content: center;
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 16px;
             }
         }
     </style>
@@ -222,23 +274,24 @@
     </header>
 
     <main class="container">
-        <div class="search-filter">
-            <input type="text" id="search" placeholder="Search UIs...">
+        <div class="controls">
+            <input type="text" id="search" placeholder="Search interfaces...">
+            <div class="tag-filter">
+                <span class="tag" data-tag="form">Form</span>
+                <span class="tag" data-tag="unsubscribe">Unsubscribe</span>
+                <span class="tag" data-tag="volume">Volume</span>
+                <span class="tag" data-tag="button">Button</span>
+                <button id="clearTags">Clear</button>
+            </div>
         </div>
-        <div class="tag-filter">
-            <span class="tag" data-tag="form">🏷️form</span>
-            <span class="tag" data-tag="unsubscribe">🏷️unsubscribe</span>
-            <span class="tag" data-tag="volume">🏷️volume</span>
-            <span class="tag" data-tag="button">🏷️button</span>
-            <button id="clearTags">Clear Filters</button>
-        </div>
+
         <div class="gallery">
             <div class="ui-item" data-tags="form">
                 <img src="images/form.png" alt="form thumbnail">
                 <div class="ui-item-content">
                     <h3>Simple Registration Form</h3>
                     <p>A form that tests your patience with unexpected interactions.</p>
-                    <a href="form/">Explore UI</a>
+                    <a href="form/">Explore</a>
                 </div>
             </div>
             <div class="ui-item" data-tags="unsubscribe button">
@@ -246,15 +299,15 @@
                 <div class="ui-item-content">
                     <h3>Easy Unsubscribe Button</h3>
                     <p>A very user-friendly and easy unsubscribe button.</p>
-                    <a href="unsubscribe-button/">Explore UI</a>
+                    <a href="unsubscribe-button/">Explore</a>
                 </div>
             </div>
             <div class="ui-item" data-tags="volume">
                 <img src="images/gravity-volume.png" alt="gravity volume thumbnail">
                 <div class="ui-item-content">
                     <h3>Gravity Volume Slider</h3>
-                    <p>Control volume with gravity</p><br>
-                    <a href="gravity-volume/">Explore UI</a>
+                    <p>Control volume with gravity</p>
+                    <a href="gravity-volume/">Explore</a>
                 </div>
             </div>
         </div>
@@ -264,8 +317,7 @@
         <div class="container">
             <div class="footer-content">
                 <a href="https://github.com/swatishchoudhury" target="_blank">GitHub</a>
-                <a href="https://www.reddit.com/r/badUIbattles/" target="_blank">Inspiration -
-                    r/badUIbattles</a>
+                <a href="https://www.reddit.com/r/badUIbattles/" target="_blank">r/badUIbattles</a>
             </div>
         </div>
     </footer>
